@@ -18,6 +18,7 @@ profile
 DerivedData
 *.hmap
 *.ipa
+.build/
 
 # Bundler
 .bundle
@@ -31,3 +32,4 @@ Carthage
 # `pod install` in .travis.yml
 #
 # Pods/
+*.md
