@@ -69,7 +69,7 @@ internal protocol MenuModel {
     @objc optional func sideMenuDidDisappear(menu: SideMenuNavigationController, animated: Bool)
 }
 
-internal protocol SideMenuNavigationControllerTransitionDelegate: class {
+internal protocol SideMenuNavigationControllerTransitionDelegate: AnyObject {
     func sideMenuTransitionDidDismiss(menu: Menu)
 }
 
@@ -505,6 +505,13 @@ internal extension SideMenuNavigationController {
         dismiss(animated: flag, completion: completion)
     }
 
+    func dismissMenuWithTap() {
+        guard !isHidden else { return }
+        transitionController?.interactive = true
+        dismiss(animated: true, completion: nil)
+        transitionController?.handle(state: .finish)
+    }
+
     // Note: although this method is syntactically reversed it allows the interactive property to scoped privately
     func present(from viewController: UIViewController?, interactively: Bool, completion: (() -> Void)? = nil) {
         guard let viewController = viewController else { return }
@@ -635,7 +642,7 @@ private extension SideMenuNavigationController {
     @objc func handleDismissMenuTap(_ tap: UITapGestureRecognizer) {
         let hitTest = view.window?.hitTest(tap.location(in: view.superview), with: nil)
         guard hitTest == view.superview else { return }
-        dismissMenu()
+        dismissMenuWithTap()
     }
 
     @objc func handleDismissMenuPan(_ gesture: UIPanGestureRecognizer) {

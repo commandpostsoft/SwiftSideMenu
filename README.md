@@ -5,6 +5,10 @@
 [![License](https://img.shields.io/cocoapods/l/SideMenu.svg?style=flat-square)](http://cocoapods.org/pods/SideMenu)
 [![Platform](https://img.shields.io/cocoapods/p/SideMenu.svg?style=flat-square)](http://cocoapods.org/pods/SideMenu)
 
+## 🔧 Fork Notice
+
+This is a maintained fork of [jonkykong/SideMenu](https://github.com/jonkykong/SideMenu) with additional bug fixes and improvements from the community. Version **6.5.1** includes three important fixes that were pending in the upstream repository.
+
 ### If you like SideMenu, give it a ★ at the top right of this page.
 #### SideMenu needs your help! If you're a skilled iOS developer and want to help maintain this repository and answer issues asked by the community, please [send me an email](mailto:yo@massappeal.co?subject=I%20Want%20To%20Help!).
 
@@ -13,8 +17,9 @@
 > * Check out my [website](http://massappeal.co) to see some of my other projects.
 > * Building and maintaining this **free** library takes a lot of my time and **saves you time**. Please consider paying it forward by supporting me with a small amount to my [PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=contact%40jonkent%2eme&lc=US&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted). (only **13** people have donated since 12/23/15 but **thank you** to those who have!)
 
+* **[Changelog](#changelog)**
 * **[Overview](#overview)**
-  * [Preview Samples](#preview-samples) 
+  * [Preview Samples](#preview-samples)
 * **[Requirements](#requirements)**
 * **[Installation](#installation)**
   * [CocoaPods](#cocoapods)
@@ -31,6 +36,37 @@
 * [Known Issues](#known-issues)
 * [Thank You](#thank-you)
 * [License](#license)
+
+## Changelog
+
+### Version 6.5.1 (January 2025)
+
+This release includes three important bug fixes from the upstream repository:
+
+#### ✅ Swift Modernization (PR #676)
+- **Fixed**: Swift deprecation warnings in Xcode 12.5+
+- **Changes**: Replaced deprecated `class` keyword with `AnyObject` in 5 protocol declarations
+- **Impact**: Eliminates compiler warnings, modernizes Swift syntax
+- **Risk**: None - pure syntax update
+
+#### ✅ Accessibility Fix (PR #702)
+- **Fixed**: Keyboard navigation accessibility issues
+- **Changes**: Removed `backgroundColor` property, improved iOS standards compliance
+- **Impact**: Fixes keyboard accessibility when menu is presented
+- **Risk**: Low - removes background color customization (breaking change)
+- **Migration**: Background colors are now handled internally with `.clear`
+
+#### ✅ Keyboard Flash Fix (PR #654)
+- **Fixed**: Keyboard flashing/appearing twice when menu is dismissed
+- **Changes**: Added `dismissMenuWithTap()` method for proper tap-based dismissal
+- **Impact**: Prevents double keyboard restoration bug
+- **Risk**: None - isolated improvement to dismiss behavior
+
+**Total Changes**: 7 files modified, ~20 lines changed
+
+For detailed information about applied fixes, see [claude.md](claude.md#applied-fixes-january-2025).
+
+---
 
 ## Overview
 

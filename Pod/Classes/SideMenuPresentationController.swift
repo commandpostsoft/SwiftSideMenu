@@ -20,7 +20,7 @@ internal protocol PresentationModel {
     var menuWidth: CGFloat { get }
 }
 
-internal protocol SideMenuPresentationControllerDelegate: class {
+internal protocol SideMenuPresentationControllerDelegate: AnyObject {
     func sideMenuPresentationControllerDidTap(_ presentationController: SideMenuPresentationController)
     func sideMenuPresentationController(_ presentationController: SideMenuPresentationController, didPanWith gesture: UIPanGestureRecognizer)
 }
@@ -49,7 +49,7 @@ internal final class SideMenuPresentationController {
         guard config.statusBarEndAlpha > .leastNonzeroMagnitude else { return nil }
 
         return UIView {
-            $0.backgroundColor = config.presentationStyle.backgroundColor
+            $0.backgroundColor = .clear
             $0.autoresizingMask = [.flexibleHeight, .flexibleWidth]
             $0.isUserInteractionEnabled = false
         }
@@ -104,11 +104,12 @@ internal final class SideMenuPresentationController {
         }
 
         presentingViewController.view.isUserInteractionEnabled = config.presentingViewControllerUserInteractionEnabled
-        containerView.backgroundColor = config.presentationStyle.backgroundColor
-        
+
         layerViews()
 
         if let statusBarView = statusBarView {
+            // Fix: Ensure trait collection is valid before adding to view hierarchy
+            statusBarView.overrideUserInterfaceStyle = containerView.traitCollection.userInterfaceStyle
             containerView.addSubview(statusBarView)
         }
         

@@ -22,7 +22,7 @@ internal protocol AnimationModel {
     var usingSpringWithDamping: CGFloat { get }
 }
 
-internal protocol SideMenuAnimationControllerDelegate: class {
+internal protocol SideMenuAnimationControllerDelegate: AnyObject {
     func sideMenuAnimationController(_ animationController: SideMenuAnimationController, didDismiss viewController: UIViewController)
     func sideMenuAnimationController(_ animationController: SideMenuAnimationController, didPresent viewController: UIViewController)
 }
@@ -119,12 +119,19 @@ private extension SideMenuAnimationController {
         guard
             presenting,
             let presentingViewController = presentingViewController,
-            let presentedViewController = presentedViewController
+            let presentedViewController = presentedViewController,
+            let containerView = containerView
             else { return }
 
         originalSuperview = presentingViewController.view.superview
-        containerView?.addSubview(presentingViewController.view)
-        containerView?.addSubview(presentedViewController.view)
+
+        // Fix: Ensure trait collection is valid before adding to view hierarchy
+        // This prevents NSInternalInconsistencyException when UIKit tries to resolve
+        // dynamic colors during trait collection propagation. Without this, adding
+        // the view can trigger color resolution with an incomplete trait collection.
+        presentedViewController.view.overrideUserInterfaceStyle = containerView.traitCollection.userInterfaceStyle
+
+        containerView.addSubview(presentedViewController.view)
     }
 
     func transitionWillBegin(presenting: Bool) {

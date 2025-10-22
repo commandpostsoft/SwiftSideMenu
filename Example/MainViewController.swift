@@ -80,7 +80,6 @@ class MainViewController: UIViewController {
 
     private func makeSettings() -> SideMenuSettings {
         let presentationStyle = selectedPresentationStyle()
-        presentationStyle.backgroundColor = UIColor(patternImage: #imageLiteral(resourceName: "background"))
         presentationStyle.menuStartAlpha = CGFloat(menuAlphaSlider.value)
         presentationStyle.menuScaleFactor = CGFloat(menuScaleFactorSlider.value)
         presentationStyle.onTopShadowOpacity = shadowOpacitySlider.value

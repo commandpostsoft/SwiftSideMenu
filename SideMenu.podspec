@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "SideMenu"
-  s.version          = "6.5.0"
+  s.version          = "6.5.1"
   s.summary          = "Simple side menu control for iOS in Swift inspired by Facebook. Right and Left sides. No coding required."
 
 # This description is used to generate tags and improve search results.
@@ -21,11 +21,11 @@ Pod::Spec.new do |s|
   SideMenu is a simple and versatile side menu control. It's highly customizable, but can also be implemented in storyboard without a single line of code. The are three standard animation styles to choose from along with several other options for further customization if desired. Just type SideMenuManager.menu... and code completion will show you everything you can customize.
                        DESC
 
-  s.homepage         = "https://github.com/jonkykong/SideMenu"
+  s.homepage         = "https://github.com/commandpostsoft/SwiftSideMenu"
   s.screenshots      = [ "https://raw.githubusercontent.com/jonkykong/SideMenu/master/etc/SlideOut.gif", "https://raw.githubusercontent.com/jonkykong/SideMenu/master/etc/SlideIn.gif", "https://raw.githubusercontent.com/jonkykong/SideMenu/master/etc/Dissolve.gif", "https://raw.githubusercontent.com/jonkykong/SideMenu/master/etc/InOut.gif" ]
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { "jonkykong" => "contact@jonkent.me" }
-  s.source           = { :git => "https://github.com/jonkykong/SideMenu.git", :tag => s.version.to_s }
+  s.source           = { :git => "https://github.com/commandpostsoft/SwiftSideMenu.git", :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '10.0'
