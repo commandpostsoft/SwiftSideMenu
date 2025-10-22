@@ -41,7 +41,7 @@ This is a maintained fork of [jonkykong/SideMenu](https://github.com/jonkykong/S
 
 ### Version 6.5.1 (January 2025)
 
-This release includes three important bug fixes from the upstream repository:
+This release includes three important bug fixes from the upstream repository and updates the minimum iOS version to 13.0.
 
 #### ✅ Swift Modernization (PR #676)
 - **Fixed**: Swift deprecation warnings in Xcode 12.5+
@@ -61,6 +61,11 @@ This release includes three important bug fixes from the upstream repository:
 - **Changes**: Added `dismissMenuWithTap()` method for proper tap-based dismissal
 - **Impact**: Prevents double keyboard restoration bug
 - **Risk**: None - isolated improvement to dismiss behavior
+
+#### 🔼 Minimum iOS Version
+- **Updated**: Minimum iOS version raised from 10.0 to 13.0
+- **Reason**: Uses `overrideUserInterfaceStyle` API which requires iOS 13+
+- **Impact**: Apps supporting iOS 10-12 should remain on version 6.5.0
 
 **Total Changes**: 7 files modified, ~20 lines changed
 
@@ -89,7 +94,7 @@ Check out the example project to see it in action!
 ## Requirements
 - [x] Xcode 11.
 - [x] Swift 5.
-- [x] iOS 10 or higher.
+- [x] iOS 13 or higher.
 
 ## Installation
 ### CocoaPods
@@ -104,7 +109,7 @@ To integrate SideMenu into your Xcode project using CocoaPods, specify it in you
 
 ```ruby
 source 'https://github.com/CocoaPods/Specs.git'
-platform :ios, '10.0'
+platform :ios, '13.0'
 use_frameworks!
 
 pod 'SideMenu'
