@@ -125,6 +125,9 @@ private extension SideMenuAnimationController {
 
         originalSuperview = presentingViewController.view.superview
 
+        // Add both presenting and presented views to the container for synchronized animation
+        containerView.addSubview(presentingViewController.view)
+
         // Fix: Ensure trait collection is valid before adding to view hierarchy
         // This prevents NSInternalInconsistencyException when UIKit tries to resolve
         // dynamic colors during trait collection propagation. Without this, adding
