@@ -41,6 +41,30 @@ On iPad, when the side menu was open and the app went to background then returne
 ### Fix 8: Skip Transition During Backgrounding (#660)
 iOS fires `viewWillTransition(to:with:)` when the app is backgrounding. When this ran with a nil `presentationController`, the animation coordinator's methods silently became no-ops via optional chaining, leaving the view hierarchy in a corrupted state (contributing to the rotation glitch from Fix 7).
 
-**Fix**: Added `.background` and `.inactive` app state checks to the guard in `viewWillTransition(to:with:)` so transition/layout code is skipped when the app isn't in the foreground. This is the root cause fix from PR #660 Part 1 (the maintainer-approved portion).
+**Fix**: Added `.background` app state check to the guard in `viewWillTransition(to:with:)` so transition/layout code is skipped when the app is backgrounding. Only `.background` is checked — `.inactive` was deliberately excluded because apps go inactive during Control Center, Notification Center, system dialogs, and iPad multitasking transitions, and rotation during those states should still be handled.
 
 - Modified `Pod/Classes/SideMenuNavigationController.swift` (added app state guard in `viewWillTransition`)
+
+### Fix 9: Crash When Child VC Presents .formSheet/.pageSheet
+When a view controller within the SideMenu navigation stack presented a modal using `.formSheet` or `.pageSheet`, UIKit created a `UISheetPresentationController` that conflicted with SideMenu's custom `SideMenuTransitionController`. The transition controller unconditionally returned custom animation/interaction controllers for all presentations — not just SideMenu's own — causing `NSInvalidArgumentException` crashes via `___forwarding___` when `UISheetPresentationController` sent selectors that `SideMenuTransitionController` didn't respond to.
+
+Two crash variants were observed in production:
+1. UIButton layout corruption during CA transaction layout pass (downstream view hierarchy corruption)
+2. Gesture recognizer initialization crash during `UISheetPresentationController.presentationTransitionWillBegin`
+
+**Fix**: Added type guards to all four `UIViewControllerTransitioningDelegate` methods in `SideMenuTransitionController`. The animation controller methods now check that the presented/dismissed VC is a `SideMenuNavigationController` before returning custom animators. The interaction controller methods check that the animator is a `SideMenuAnimationController`. For any other presentation, the methods return `nil`, telling UIKit to use its standard presentation infrastructure.
+
+- Modified `Pod/Classes/SideMenuTransitionController.swift` (added guards to delegate methods)
+
+### Fix 10: Code Review Fixes
+Addressed issues found during code review of Fixes 3, 7, 8, and 9.
+
+**Non-animated dismiss leaked `transitionController`**: Fix 3 moved `transitionController = nil` from `viewDidDisappear` to the `didDismiss` delegate callback (which fires from `animationEnded`). However, for non-animated dismissals where UIKit skips the custom transition system, `animationEnded` never fires, so the callback never ran and `transitionController` was never cleaned up. A stale controller would be reused on the next present with outdated config.
+
+**Fix**: Added a deferred fallback (`DispatchQueue.main.async`) in `viewDidDisappear` that nils out `transitionController` on the next run loop iteration. For animated dismissals, `animationEnded` fires first and the async block is a no-op. For non-animated dismissals, it catches the case where the callback chain never executed. Also cleaned up the dead empty `if isBeingDismissed {}` block.
+
+**`.inactive` state check too aggressive**: Fix 8 checked both `.background` and `.inactive` in `viewWillTransition`. The `.inactive` check blocked legitimate rotation handling during Control Center, Notification Center, system dialogs, and iPad multitasking transitions.
+
+**Fix**: Removed the `.inactive` check, keeping only `.background`.
+
+- Modified `Pod/Classes/SideMenuNavigationController.swift`

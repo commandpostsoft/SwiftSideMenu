@@ -33,6 +33,7 @@ internal final class SideMenuTransitionController: NSObject, UIViewControllerTra
     }
 
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        guard presented is SideMenuNavigationController else { return nil }
         animationController = SideMenuAnimationController(
             config: config,
             leftSide: leftSide,
@@ -41,14 +42,17 @@ internal final class SideMenuTransitionController: NSObject, UIViewControllerTra
     }
 
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        guard dismissed is SideMenuNavigationController else { return nil }
         return animationController
     }
 
     func interactionControllerForPresentation(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        guard animator is SideMenuAnimationController else { return nil }
         return interactionController(using: animator)
     }
 
     func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        guard animator is SideMenuAnimationController else { return nil }
         return interactionController(using: animator)
     }
 

@@ -243,6 +243,12 @@ open class SideMenuNavigationController: UINavigationController {
         // This check corrects that.
         if isBeingDismissed {
             transitionController?.transition(presenting: false, animated: false)
+            // Fallback: if UIKit skips the custom transition system (non-animated dismiss),
+            // animationEnded never fires so the didDismiss callback never nils transitionController.
+            // Defer cleanup to the next run loop — if animationEnded already fired, this is a no-op.
+            DispatchQueue.main.async { [weak self] in
+                self?.transitionController = nil
+            }
         }
 
         // Clear selection on UITableViewControllers when reappearing using custom transitions
@@ -255,10 +261,7 @@ open class SideMenuNavigationController: UINavigationController {
 
         activeDelegate?.sideMenuDidDisappear?(menu: self, animated: animated)
 
-        if isBeingDismissed {
-            // transitionController is now cleared in didDismiss delegate callback
-            // to ensure animationEnded fires before deallocation
-        } else if dismissOnPresent {
+        if !isBeingDismissed && dismissOnPresent {
             view.isHidden = true
         }
     }
@@ -268,8 +271,7 @@ open class SideMenuNavigationController: UINavigationController {
         
         // Don't bother resizing if the view isn't visible or the app is backgrounding
         guard let transitionController = transitionController, !view.isHidden,
-              UIApplication.shared.applicationState != .background,
-              UIApplication.shared.applicationState != .inactive else { return }
+              UIApplication.shared.applicationState != .background else { return }
 
         rotating = true
         
