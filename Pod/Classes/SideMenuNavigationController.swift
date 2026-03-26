@@ -323,6 +323,16 @@ open class SideMenuNavigationController: UINavigationController {
         }
     }
 
+    open override var modalPresentationStyle: UIModalPresentationStyle {
+        get { return super.modalPresentationStyle }
+        set {
+            super.modalPresentationStyle = .overFullScreen
+            if newValue != .overFullScreen {
+                Print.warning(.modalPresentationStyle, required: true)
+            }
+        }
+    }
+
     override open var transitioningDelegate: UIViewControllerTransitioningDelegate? {
         get {
             guard transitionController == nil else { return transitionController }

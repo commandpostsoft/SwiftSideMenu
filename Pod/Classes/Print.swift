@@ -15,7 +15,8 @@ internal enum Print: String { case
     panGestureAdded = "%@ was called before %@ or %@ was set. Gestures will not work without a menu.",
     property = "A menu's %@ property can only be changed when it is hidden.",
     screenGestureAdded = "%@ was called before %@ was set. The gesture will not work without a menu. Use %@ to add gestures for only one menu.",
-    transitioningDelegate = "SideMenu requires use of the transitioningDelegate. It cannot be modified."
+    transitioningDelegate = "SideMenu requires use of the transitioningDelegate. It cannot be modified.",
+    modalPresentationStyle = "SideMenu requires modalPresentationStyle to be .overFullScreen. It cannot be modified."
 
     enum PropertyName: String { case
         leftSide

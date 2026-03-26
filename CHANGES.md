@@ -22,3 +22,11 @@ SPM users in multi-platform projects got compilation errors because UIKit isn't 
 
 ### Fix 5: Init with Settings (#681)
 Already implemented - the initializer at `SideMenuNavigationController.swift` line 167 already accepts `settings: SideMenuSettings = SideMenuSettings()`. No work needed.
+
+### Fix 6: Crash when UISheetPresentationController conflicts with SideMenu transitions
+If `modalPresentationStyle` was changed from `.overFullScreen` (e.g., by user code, another library, or iOS defaults on iPad), UIKit would create a `UISheetPresentationController` that conflicted with SideMenu's custom `SideMenuAnimationController` / `SideMenuPresentationController`, causing an `NSInvalidArgumentException` during gesture recognizer setup.
+
+**Fix**: Added a `modalPresentationStyle` override on `SideMenuNavigationController` that enforces `.overFullScreen` and prints a warning if other code attempts to change it. Follows the same pattern as the existing `transitioningDelegate` guard.
+
+- Modified `Pod/Classes/SideMenuNavigationController.swift` (added property override)
+- Modified `Pod/Classes/Print.swift` (added warning message)
