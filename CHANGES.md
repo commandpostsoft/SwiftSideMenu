@@ -37,3 +37,10 @@ On iPad, when the side menu was open and the app went to background then returne
 **Fix**: iPad now uses `.overCurrentContext` instead of `.overFullScreen`. Both styles keep the presenting view in the hierarchy, so the custom transition system works identically — the difference is `.overCurrentContext` handles iPad's view transform restoration correctly during background/foreground cycles. The `modalPresentationStyle` override was updated to allow both safe styles through while still blocking problematic ones (`.pageSheet`, `.automatic`, etc.).
 
 - Modified `Pod/Classes/SideMenuNavigationController.swift` (iPad detection in `setup()`, updated override guard)
+
+### Fix 8: Skip Transition During Backgrounding (#660)
+iOS fires `viewWillTransition(to:with:)` when the app is backgrounding. When this ran with a nil `presentationController`, the animation coordinator's methods silently became no-ops via optional chaining, leaving the view hierarchy in a corrupted state (contributing to the rotation glitch from Fix 7).
+
+**Fix**: Added `.background` and `.inactive` app state checks to the guard in `viewWillTransition(to:with:)` so transition/layout code is skipped when the app isn't in the foreground. This is the root cause fix from PR #660 Part 1 (the maintainer-approved portion).
+
+- Modified `Pod/Classes/SideMenuNavigationController.swift` (added app state guard in `viewWillTransition`)

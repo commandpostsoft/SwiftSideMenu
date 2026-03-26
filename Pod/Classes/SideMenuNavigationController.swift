@@ -266,8 +266,10 @@ open class SideMenuNavigationController: UINavigationController {
     override open func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
-        // Don't bother resizing if the view isn't visible
-        guard let transitionController = transitionController, !view.isHidden else { return }
+        // Don't bother resizing if the view isn't visible or the app is backgrounding
+        guard let transitionController = transitionController, !view.isHidden,
+              UIApplication.shared.applicationState != .background,
+              UIApplication.shared.applicationState != .inactive else { return }
 
         rotating = true
         
