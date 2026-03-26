@@ -326,8 +326,11 @@ open class SideMenuNavigationController: UINavigationController {
     open override var modalPresentationStyle: UIModalPresentationStyle {
         get { return super.modalPresentationStyle }
         set {
-            super.modalPresentationStyle = .overFullScreen
-            if newValue != .overFullScreen {
+            switch newValue {
+            case .overFullScreen, .overCurrentContext:
+                super.modalPresentationStyle = newValue
+            default:
+                super.modalPresentationStyle = .overFullScreen
                 Print.warning(.modalPresentationStyle, required: true)
             }
         }
@@ -558,8 +561,12 @@ private extension SideMenuNavigationController {
         })
     }
 
+    var isiPad: Bool {
+        UIDevice.current.userInterfaceIdiom == .pad
+    }
+
     func setup() {
-        modalPresentationStyle = .overFullScreen
+        modalPresentationStyle = isiPad ? .overCurrentContext : .overFullScreen
 
         setupBlur()
         if #available(iOS 13.0, *) {} else {

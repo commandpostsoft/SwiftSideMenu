@@ -30,3 +30,10 @@ If `modalPresentationStyle` was changed from `.overFullScreen` (e.g., by user co
 
 - Modified `Pod/Classes/SideMenuNavigationController.swift` (added property override)
 - Modified `Pod/Classes/Print.swift` (added warning message)
+
+### Fix 7: iPad Rotation Glitch (#656, #679)
+On iPad, when the side menu was open and the app went to background then returned, the presenting view could rotate 90 degrees. The root cause was `.overFullScreen` interacting poorly with iPad's view hierarchy management during app lifecycle transitions.
+
+**Fix**: iPad now uses `.overCurrentContext` instead of `.overFullScreen`. Both styles keep the presenting view in the hierarchy, so the custom transition system works identically — the difference is `.overCurrentContext` handles iPad's view transform restoration correctly during background/foreground cycles. The `modalPresentationStyle` override was updated to allow both safe styles through while still blocking problematic ones (`.pageSheet`, `.automatic`, etc.).
+
+- Modified `Pod/Classes/SideMenuNavigationController.swift` (iPad detection in `setup()`, updated override guard)
