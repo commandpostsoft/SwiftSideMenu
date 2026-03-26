@@ -5,6 +5,7 @@
 //  Created by Jon Kent on 9/4/19.
 //
 
+#if canImport(UIKit)
 import UIKit
 
 protocol CoordinatorModel {
@@ -105,3 +106,4 @@ internal final class SideMenuPushCoordinator: Coordinator {
         }
     }
 }
+#endif

@@ -33,3 +33,4 @@ Carthage
 #
 # Pods/
 *.md
+!CHANGES.md

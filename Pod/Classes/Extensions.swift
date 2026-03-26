@@ -5,6 +5,7 @@
 //  Created by Jon Kent on 7/1/19.
 //
 
+#if canImport(UIKit)
 import UIKit
 
 extension NSObject: InitializableClass {}
@@ -114,3 +115,4 @@ internal extension UIApplication {
         return UIApplication.shared.windows.filter { $0.isKeyWindow }.first
     }
 }
+#endif

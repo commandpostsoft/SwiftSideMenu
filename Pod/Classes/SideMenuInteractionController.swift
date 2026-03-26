@@ -5,6 +5,7 @@
 //  Created by Jon Kent on 12/28/18.
 //
 
+#if canImport(UIKit)
 import UIKit
 
 internal final class SideMenuInteractionController: UIPercentDrivenInteractiveTransition {
@@ -63,3 +64,4 @@ private extension SideMenuInteractionController {
         }
     }
 }
+#endif

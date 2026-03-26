@@ -5,6 +5,7 @@
 //  Copyright © 2015 Jon Kent. All rights reserved.
 //
 
+#if canImport(UIKit)
 import UIKit
 
 @objcMembers
@@ -227,3 +228,4 @@ extension SideMenuManager: SideMenuNavigationControllerTransitionDelegate {
         switchToMenu.present(from: topMostViewController, interactively: true)
     }
 }
+#endif

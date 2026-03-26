@@ -6,6 +6,7 @@
 //  Copyright © 2019 jonkykong. All rights reserved.
 //
 
+#if canImport(UIKit)
 import UIKit
 
 internal protocol SideMenuTransitionControllerDelegate: AnyObject {
@@ -91,3 +92,4 @@ private extension SideMenuTransitionController {
         return interactionController
     }
 }
+#endif

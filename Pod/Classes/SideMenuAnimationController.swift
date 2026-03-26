@@ -5,6 +5,7 @@
 //  Created by Jon Kent on 10/24/18.
 //
 
+#if canImport(UIKit)
 import UIKit
 
 internal protocol AnimationModel {
@@ -240,3 +241,4 @@ private extension UIViewControllerContextTransitioning {
         return viewController(forKey: isPresenting ? .to : .from)
     }
 }
+#endif

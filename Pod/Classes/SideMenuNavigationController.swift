@@ -5,6 +5,7 @@
 //  Copyright © 2016 Jon Kent. All rights reserved.
 //
 
+#if canImport(UIKit)
 import UIKit
 
 @objc public enum SideMenuPushStyle: Int { case
@@ -255,7 +256,8 @@ open class SideMenuNavigationController: UINavigationController {
         activeDelegate?.sideMenuDidDisappear?(menu: self, animated: animated)
 
         if isBeingDismissed {
-            transitionController = nil
+            // transitionController is now cleared in didDismiss delegate callback
+            // to ensure animationEnded fires before deallocation
         } else if dismissOnPresent {
             view.isHidden = true
         }
@@ -463,6 +465,7 @@ extension SideMenuNavigationController: SideMenuTransitionControllerDelegate {
 
     func sideMenuTransitionController(_ transitionController: SideMenuTransitionController, didDismiss viewController: UIViewController) {
         sideMenuManager.sideMenuTransitionDidDismiss(menu: self)
+        self.transitionController = nil
     }
 
     func sideMenuTransitionController(_ transitionController: SideMenuTransitionController, didPresent viewController: UIViewController) {
@@ -661,3 +664,4 @@ private extension SideMenuNavigationController {
         return -presentFactor
     }
 }
+#endif

@@ -5,6 +5,7 @@
 //  Created by Jon Kent on 7/3/19.
 //
 
+#if canImport(UIKit)
 import UIKit
 
 // Deprecations; to be removed at a future date.
@@ -214,3 +215,4 @@ public typealias UISideMenuNavigationController = SideMenuNavigationController
 
 @available(*, deprecated, renamed: "SideMenuNavigationControllerDelegate")
 public typealias UISideMenuNavigationControllerDelegate = SideMenuNavigationControllerDelegate
+#endif

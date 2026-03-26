@@ -31,10 +31,10 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '13.0'
   s.swift_version = '5.0'
 
-  s.source_files = 'Pod/Classes/**/*'
-  # s.resource_bundles = {
-  #    'SideMenu' => ['Pod/Assets/*.png']
-  #  }
+  s.source_files = 'Pod/Classes/**/*.swift'
+  s.resource_bundles = {
+     'SideMenu' => ['Pod/Classes/PrivacyInfo.xcprivacy']
+   }
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'

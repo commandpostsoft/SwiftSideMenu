@@ -5,6 +5,7 @@
 //  Created by Jon Kent on 7/2/19.
 //
 
+#if canImport(UIKit)
 import UIKit
 
 @objcMembers
@@ -108,3 +109,4 @@ public extension SideMenuPresentationStyle {
         }
     }
 }
+#endif

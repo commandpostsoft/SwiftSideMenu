@@ -6,6 +6,7 @@
 //
 //
 
+#if canImport(UIKit)
 import UIKit
 
 open class UITableViewVibrantCell: UITableViewCell {
@@ -59,3 +60,4 @@ open class UITableViewVibrantCell: UITableViewCell {
         }
     }
 }
+#endif
