@@ -87,6 +87,8 @@ internal final class SideMenuPresentationController {
             snapshotView?.frame = presentingViewController.view.bounds
         }
 
+        applyWindowControlInsetsIfNeeded(to: presentedViewController, from: containerView)
+
         guard let statusBarView = statusBarView else { return }
 
         var statusBarFrame: CGRect = self.statusBarFrame
@@ -200,10 +202,21 @@ internal final class SideMenuPresentationController {
 
         statusBarView?.removeFromSuperview()
         removeStyles(from: presentingViewController.containerViewController.view)
-        
+
         if let interactivePopGestureRecognizerEnabled = interactivePopGestureRecognizerEnabled,
             let topNavigationController = presentingViewController as? UINavigationController {
             topNavigationController.interactivePopGestureRecognizer?.isEnabled = interactivePopGestureRecognizerEnabled
+        }
+
+        // The menu VC is cached by SideMenuManager and reused across presentations.
+        // Clear the window-control horizontal insets we applied so a re-present on a
+        // different scene/window doesn't render one frame with stale clearance from
+        // the old window. Top/bottom intentionally untouched — we never write them.
+        if presentedViewController.additionalSafeAreaInsets.left != 0 || presentedViewController.additionalSafeAreaInsets.right != 0 {
+            var insets = presentedViewController.additionalSafeAreaInsets
+            insets.left = 0
+            insets.right = 0
+            presentedViewController.additionalSafeAreaInsets = insets
         }
 
         presentingViewController.view.isUserInteractionEnabled = true
@@ -238,6 +251,34 @@ private extension SideMenuPresentationController {
             rect.size.height -= statusBarOffset
         }
         return rect
+    }
+
+    // iPadOS 26+ windowed mode: the window-control ("traffic light") pill
+    // overlays the top-left corner of the scene. A left-side menu's leading
+    // nav-bar items sit underneath. Read the horizontal corner-adaptation
+    // delta from the window (stable — derived from the scene chrome, not
+    // affected by anything we write to the presentedVC's insets, so no
+    // feedback loop) and apply it as additionalSafeAreaInsets on the
+    // presented VC. UINavigationBar and UITableView respect these insets
+    // automatically.
+    func applyWindowControlInsetsIfNeeded(to presentedViewController: UIViewController, from containerView: UIView) {
+        let target: UIEdgeInsets
+        #if compiler(>=6.2)
+        if #available(iOS 26.0, *), let window = containerView.window {
+            let adapted = window.edgeInsets(for: .safeArea(cornerAdaptation: .horizontal))
+            let baseline = window.edgeInsets(for: .safeArea())
+            let extraLeft = leftSide ? max(0, adapted.left - baseline.left) : 0
+            let extraRight = leftSide ? 0 : max(0, adapted.right - baseline.right)
+            target = UIEdgeInsets(top: 0, left: extraLeft, bottom: 0, right: extraRight)
+        } else {
+            target = .zero
+        }
+        #else
+        target = .zero
+        #endif
+
+        guard presentedViewController.additionalSafeAreaInsets != target else { return }
+        presentedViewController.additionalSafeAreaInsets = target
     }
 
     func transition(to: UIViewController, from: UIViewController, alpha: CGFloat, statusBarAlpha: CGFloat, scale: CGFloat, translate: CGFloat) {

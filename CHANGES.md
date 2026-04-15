@@ -68,3 +68,29 @@ Addressed issues found during code review of Fixes 3, 7, 8, and 9.
 **Fix**: Removed the `.inactive` check, keeping only `.background`.
 
 - Modified `Pod/Classes/SideMenuNavigationController.swift`
+
+### Fix 11: iPadOS 26 Window-Control ("Traffic Light") Overlap
+On iPadOS 26 in Stage Manager / windowed mode, the scene's window-control pill overlays the top-left corner of the window. A left-side `SideMenuNavigationController`'s leading nav-bar items (back button, title, bar button items) sat underneath the pill and were obscured / not reliably tappable. `UINavigationBar`'s built-in iOS 26 corner adaptation (the same `UIView.LayoutRegion` API exposed to app code) wasn't kicking in through SideMenu's `.overCurrentContext` modal presentation path — the scene's chrome info isn't propagated to the presented nav controller's view the way it is for top-level view controllers.
+
+**Fix**: Compute the horizontal corner-adaptation delta from the containing window and apply it as `additionalSafeAreaInsets` on the presented menu in `SideMenuPresentationController.containerViewWillLayoutSubviews()`.
+
+```swift
+let adapted = window.edgeInsets(for: .safeArea(cornerAdaptation: .horizontal))
+let baseline = window.edgeInsets(for: .safeArea())
+let extraLeft = leftSide ? max(0, adapted.left - baseline.left) : 0
+let extraRight = leftSide ? 0 : max(0, adapted.right - baseline.right)
+```
+
+Key implementation notes:
+
+1. **Read from `containerView.window`, not the menu's own view.** The window's corner-adaptation is derived from scene chrome and is not affected by anything we write to a descendant VC's `additionalSafeAreaInsets`. An earlier attempt that read from the menu's own view froze the app: `.safeArea()` baseline itself reflected the `additionalSafeAreaInsets` we'd just written, so on the next layout pass the delta flipped back to zero, then back to the clearance, etc. `UINavigationController._eagerlyUpdateSafeAreaInsets` spun in `_widthForLayout` on each oscillation until the main thread wedged. Sourcing from the window breaks that feedback loop.
+
+2. **`containerView` alone isn't enough under `.overCurrentContext`.** First cut of this fix read `containerView.edgeInsets(for:)` and got a zero delta — on iPad the transition container can be nested inside the presenter's content area and miss the scene-level corner-adaptation signal. `containerView.window` is always the scene root.
+
+3. **Physical `leftSide` gate is RTL-safe.** SideMenu's `leftSide` flag is used physically (`frameOfPresentedViewInContainerView` sets `origin.x = leftSide ? 0 : rect.width - config.menuWidth`), and `edgeInsets(for:)` returns physical insets, so the gate lines up in every locale regardless of whether iPadOS flips the pill in RTL — the `extraLeft`/`extraRight` path handles whichever physical side matches the menu's position.
+
+4. **`#if compiler(>=6.2)` + `if #available(iOS 26.0, *)`**. The new `UIView.LayoutRegion` symbols don't exist in pre-iOS-26 SDKs, so the compiler guard is necessary in addition to the runtime availability check. On older toolchains or OSes the fix is a no-op and the library behaves as before.
+
+5. **Dismissal cleanup**: `dismissalTransitionDidEnd(_:)` zeros the horizontal component of `additionalSafeAreaInsets` when a dismiss completes. `SideMenuManager` caches menu instances for reuse, and without the reset a stale inset from a previous window could briefly render during the first layout pass of a re-present on a different scene — common in Stage Manager when dragging the window between displays. Top/bottom are intentionally untouched because the library never writes them.
+
+- Modified `Pod/Classes/SideMenuPresentationController.swift` (new `applyWindowControlInsetsIfNeeded` helper, called from `containerViewWillLayoutSubviews`; reset in `dismissalTransitionDidEnd`)

@@ -295,7 +295,7 @@ open class SideMenuNavigationController: UINavigationController {
         super.viewWillLayoutSubviews()
         transitionController?.layout()
     }
-    
+
     override open func pushViewController(_ viewController: UIViewController, animated: Bool) {
         guard viewControllers.count > 0 else {
             // NOTE: pushViewController is called by init(rootViewController: UIViewController)
